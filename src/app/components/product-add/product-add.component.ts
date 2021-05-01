@@ -11,8 +11,8 @@ import { ProductService } from 'src/app/services/product.service';
 export class ProductAddComponent implements OnInit {
 
   productAddForm: FormGroup;
-  constructor(private formBuilder: FormBuilder, private productService:ProductService,
-    private toastrService:ToastrService) { }
+  constructor(private formBuilder: FormBuilder, private productService: ProductService,
+    private toastrService: ToastrService) { }
 
   ngOnInit(): void {
     this.createProductAddForm();
@@ -20,32 +20,38 @@ export class ProductAddComponent implements OnInit {
 
   createProductAddForm() {
     this.productAddForm = this.formBuilder.group({
-      productName:["",Validators.required],
-      unitPrice:["",Validators.required],
-      unitsInStock:["",Validators.required],
-      categoryId:["",Validators.required]
+      productName: ["", Validators.required],
+      unitPrice: ["", Validators.required],
+      unitsInStock: ["", Validators.required],
+      categoryId: ["", Validators.required]
 
     })
 
   }
-  add(){
-   if(this.productAddForm.valid)
-   {
-    let productModel=Object.assign({}, this.productAddForm.value)
-    this.productService.add(productModel).subscribe(response=>{
-      console.log(response)
-      this.toastrService.success(response.message,"Başarılı")
-    },responseError=>{
-      console.log(responseError)
-      this.toastrService.error(responseError)
-    })
-   
-   }
-   else{
-   this.toastrService.error("Formunuz Eksik","Dikkat")
-   }
-   
-    
+  add() {
+    if (this.productAddForm.valid) {
+      let productModel = Object.assign({}, this.productAddForm.value)
+      this.productService.add(productModel).subscribe(response => {
+        console.log(response)
+        this.toastrService.success(response.message, "Başarılı")
+      }, responseError => {
+        if (responseError.error.Errors.length > 0) {
+          console.log(responseError.error.Errors)
+          for (let i = 0; i < responseError.error.Errors.length; i++) {
+            this.toastrService.error(responseError.error.Errors[i].ErrorMessage, "Doğrulama Hatası")
+
+          }
+
+        }
+
+      })
+
+    }
+    else {
+      this.toastrService.error("Formunuz Eksik", "Dikkat")
+    }
+
+
   }
 
 }
